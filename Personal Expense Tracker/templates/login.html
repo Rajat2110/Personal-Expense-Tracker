@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js">
+    <style>
+        h1, p{
+            color: white;
+            padding: 10px;
+        }
+        .login-form{
+            text-align: center;
+            color: black;
+            width: 600px;
+            padding: 30px 60px 30px 60px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 160px;
+        }
+    </style>
+</head>
+<body style="background-image: url('{%static 'img/background.png'%}');">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>   
+    {% endfor %} 
+<div class="login-form">
+    <h1>Log in to your account</h1>
+    <form action="/handlelogin/" method="post">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="loginuname" name="loginuname" placeholder="username">
+            <label for="floatingInput">Username</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="loginpassword1" name="loginpassword1" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+        </div>
+        <p style="font-size: 18px;"><a class="link-info" href="/reset_password">Forgot password?</a></p>
+        <button type="submit" class="btn btn-outline-info btn-lg">Login</button><br>
+        <p style="font-size: 18px;">Don't have an account? <a class="link-info" href="/register">Sign Up</a></p>
+    </form>
+</div>
+</body>
+</html>

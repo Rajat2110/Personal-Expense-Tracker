@@ -1,0 +1,176 @@
+<!DOCTYPE html
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly stats</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        h1{
+            color: white;
+            padding-left: 20px;
+        }
+        html, body{
+            overflow-x: hidden;
+            overflow-y: hidden;
+            max-width: 100%;
+            max-height: 100%;
+            font-family: 'poppins', sans-serif;
+        }
+        canvas{
+            height: 400px;
+        }
+    </style>
+</head>
+<body style="background-image: url('{%static 'img/home.jpg'%}'); background-size: cover; font-family: 'poppins', sans-serif;">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>   
+    {% endfor %}
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-5-strong">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+          <!-- Collapsible wrapper -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="/index">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Weekly Expenses</a>
+              </li>
+            </ul>
+            <!-- Left links -->
+          </div>
+          <!-- Collapsible wrapper -->
+        </div>
+        <!-- Container wrapper -->
+    </nav>  
+    <div class="container" style="text-align: right; margin-right: 0px;">
+        <p style="color: white; font-size: 18px;">Logged in as: {{ request.user.username }} </p>
+    </div>
+    <h1 style="color: white; padding-left: 30px;">Yearly Expense</h1>
+    <div class="row gx-0">
+    <div class="col md-4 mt-4" style="padding-left: 30px;">
+        <div class="card mb-2" style="max-width: 32rem;">
+            <div class="card-header"><b>Yearly report</b></div>
+            <div class="card-body">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col mt-4">
+        <div class="card" style="max-width: 44rem;">
+            <div class="card-header"><b>Yearly Expenditure</b></div>
+            <div class="card-body">
+                <canvas id="myChart1"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+            
+<script type="text/javascript">
+const renderCharts=(data,labels)=>{
+var ctx = document.getElementById('myChart').getContext('2d');
+ctx.height=100
+var myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Last one year expense',
+            data: data,
+            backgroundColor: [
+                '#F5C53D','#F7B7A3','#EA5F89','#9B3192','#57167E','#2B0B3F'
+            ],
+            borderColor: [
+                'white','white','white','white','white','white'
+            ],
+            borderWidth: 1,
+            radius: 140
+        }]
+    },
+    options: {
+        title: {
+                
+                display : true,
+                text : 'Expense per Category',
+            }
+        }
+    });
+}
+  
+const renderChart=(data,labels)=>{
+var ctx1 = document.getElementById('myChart1').getContext('2d');
+ctx1.height=100
+var myChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Last one year expense',
+            data: data,
+            backgroundColor: [
+                '#F5C53D','#F7B7A3','#EA5F89','#9B3192','#57167E','#2B0B3F'
+            ],
+            borderColor: [
+                'white','white','white','white','white','white'
+            ],
+            borderWidth: 1,
+        }]
+    },
+    options: {
+        scales: {
+                y: {
+                title: {
+                display: true,
+                text: 'Amount Spent this year'
+            }
+        },
+        x: {
+                title: {
+                display: true,
+                text: 'Category'
+            }
+        }
+    },     
+            title: {        
+                display : true,
+                text : 'Expense per Category',
+                }
+        }
+    });
+}
+const getChartData=()=>{
+console.log('fetching');
+fetch('/info_year').then(res=>res.json()).then(results=>{
+    console.log("results",results);
+    const category_data = results.expense_category_data;
+    const [labels,data] = [Object.keys(category_data),Object.values(category_data)]
+    renderCharts(data , labels);
+    })
+};
+const getChart=()=>{
+console.log('fetching');
+fetch('/info_year').then(res=>res.json()).then(results=>{
+    console.log("results",results);
+    const category_data = results.expense_category_data;
+    const [labels,data] = [Object.keys(category_data),Object.values(category_data)]
+    renderChart(data , labels);
+    })
+};
+document.onload = getChartData()
+document.onload = getChart()
+</script>
+</body>
+</html>
